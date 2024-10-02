@@ -1,0 +1,49 @@
+import streamlit as st
+import pdfplumber
+import pandas as pd
+import re
+
+# Function to extract test names and values from the text
+def extract_test_data(text):
+    # Regex to capture test names and values with possible units
+    pattern = r"([A-Za-z\s\(\)\-]+)\s+(\d+\.?\d*)\s*([a-zA-Z/µ%]+)?"
+    matches = re.findall(pattern, text)
+    
+    test_data = []
+    for match in matches:
+        test_name = match[0].strip()
+        value = match[1]
+        unit = match[2].strip() if match[2] else 'N/A'  # Handle missing units
+        test_data.append([test_name, value, unit])
+
+    return test_data
+
+# Streamlit App
+def main():
+    st.title("Blood Report Analyzer")
+    st.write("Upload a blood report in PDF format to extract test names and values.")
+
+    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
+
+    if uploaded_file is not None:
+        # Extract text from PDF
+        with pdfplumber.open(uploaded_file) as pdf:
+            text = ""
+            for page in pdf.pages:
+                text += page.extract_text()
+
+        # Extract test data
+        test_data = extract_test_data(text)
+
+        if test_data:
+            # Convert extracted data into a DataFrame
+            df = pd.DataFrame(test_data, columns=["Test Name", "Value", "Units"])
+
+            # Display the DataFrame in Streamlit
+            st.write("Extracted Test Data:")
+            st.table(df)
+        else:
+            st.write("No test data found in the PDF.")
+
+if __name__ == "__main__":
+    main()
