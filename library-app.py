@@ -16,7 +16,7 @@ st.title("Library App")
 menu = st.sidebar.selectbox("Menu", ["Home", "Add Book", "View Library", "Lend Book"])
 
 if menu == "Home":
-    st.write("Welcome to the Library App!")
+    st.write("Welcome to the Archit's Library App!This is fun place to read all the amazing books")
     st.write("Use the sidebar to navigate.")
 
 elif menu == "Add Book":
